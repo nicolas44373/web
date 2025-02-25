@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import Link from 'next/link';
 import Navbar from '@/pages/components/Navbar';
 import { Truck, Award, Phone, Facebook, Instagram, Mail, Calendar, MessageCircle, MapPin, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
@@ -401,12 +401,12 @@ export default function Home() {
               </div>
 
               {/* Botón de Contáctanos */}
-              <a
+              <Link
                 href="/contacto"
                 className="inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 Contáctanos
-              </a>
+              </Link>
             </FadeInSection>
           </div>
 
