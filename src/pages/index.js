@@ -221,7 +221,7 @@ export default function Home() {
               >
                 {sucursalImages.map((img, index) => (
                     <div key={index} className="min-w-full h-full flex-shrink-0">
-                          <img 
+                          <Image 
                            src={`/${img}`} 
                            alt={`Sucursal ${index + 1}`} 
                               className="w-full h-full object-full"
