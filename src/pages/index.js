@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
 import Navbar from '@/pages/components/Navbar';
-import { Truck, Award, Phone, Facebook, Instagram } from 'lucide-react';
+import { Truck, Award, Phone, Facebook, Instagram, Mail, Calendar, MessageCircle, MapPin, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
+
 
 // Predefine los productos fuera del componente para evitar recreaciones
 const productos = [
@@ -33,6 +35,13 @@ const marcas = [
   { id: 10, imagen: 'soli.png', nombre: '', width: 170, height: 130 }
 ];
 
+// Imágenes para el carrusel de sucursales
+const sucursalImages = [
+  'suc1.webp',   // Reemplaza estos con tus imágenes rea
+  
+  
+];
+
 // Crea componentes con animaciones ligeras 
 const FadeInSection = ({ children, delay = 0, className = "" }) => {
   return (
@@ -48,6 +57,26 @@ const FadeInSection = ({ children, delay = 0, className = "" }) => {
 };
 
 export default function Home() {
+  // Estado para el carrusel de sucursales
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Funciones para controlar el carrusel
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev === sucursalImages.length - 1 ? 0 : prev + 1));
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? sucursalImages.length - 1 : prev - 1));
+  };
+
+  // Auto rotación del carrusel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen bg-amber-50">
       {/* Navbar */}
@@ -172,51 +201,233 @@ export default function Home() {
         </div>
       </div>
 
+     {/* Sección de Nuestras Sucursales - CON CARRUSEL FUNCIONAL */}
+     <section className="py-16 bg-gray-100">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">NUESTRAS SUCURSALES</h2>
+          <div className="w-24 h-1 bg-yellow-500 mx-auto"></div>
+          <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
+            Visita nuestras tiendas donde encontrarás la mejor calidad en productos avícolas y atención personalizada.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="relative h-64">
+              <div 
+                className="h-full w-full flex transition-transform duration-500 ease-in-out" 
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              >
+                {sucursalImages.map((img, index) => (
+                    <div key={index} className="min-w-full h-full flex-shrink-0">
+                          <img 
+                           src={`/${img}`} 
+                           alt={`Sucursal ${index + 1}`} 
+                              className="w-full h-full object-full"
+                               onError={(e) => {
+                              e.target.onerror = null;
+                                e.target.src = "/suc1.webp"; // Imagen de respaldo en caso de error
+                               }}
+                           />
+                      </div>
+                        ))} 
+                    </div>
+              
+              <button 
+                onClick={prevSlide}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button 
+                onClick={nextSlide}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+            <div className="flex justify-center p-4">
+              {sucursalImages.map((_, index) => (
+                <div 
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-3 h-3 rounded-full mx-1 cursor-pointer transition-all ${
+                    currentSlide === index ? "bg-yellow-500" : "bg-gray-300"
+                  }`}
+                ></div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-lg p-6">
+  <h3 className="text-xl font-bold text-gray-800 mb-4">Información de Sucursales</h3>
+
+  {/* Sucursal Juan B. Justo */}
+  <div className="mb-6 pb-6 border-b border-gray-200">
+    <h4 className="font-semibold text-lg text-gray-800 mb-2">
+      <MapPin className="inline-block mr-2 text-yellow-500" size={20} />
+      Sucursal Juan B. Justo
+    </h4>
+    <p className="text-gray-600 mb-2">Av. Juan B. Justo 1111</p>
+    <p className="text-gray-600 mb-3">San Miguel de Tucumán, Tucumán</p>
+    <div className="flex space-x-3">
+      <a href="tel:2441252" className="flex items-center text-sm text-blue-600 hover:text-blue-800">
+        <Phone size={16} className="mr-1" /> Llamar
+      </a>
+      <a 
+        href="https://maps.google.com/?q=Av. Juan B. Justo 1111, San Miguel de Tucumán, Tucumán" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="flex items-center text-sm text-blue-600 hover:text-blue-800"
+      >
+        <ExternalLink size={16} className="mr-1" /> Ver en mapa
+      </a>
+    </div>
+  </div>
+
+  {/* Sucursal Av. Colón 428 */}
+  <div>
+    <h4 className="font-semibold text-lg text-gray-800 mb-2">
+      <MapPin className="inline-block mr-2 text-yellow-500" size={20} />
+      Sucursal Av. Colón
+    </h4>
+    <p className="text-gray-600 mb-2">Av. Colón 428</p>
+    <p className="text-gray-600 mb-3">San Miguel de Tucumán, Tucumán</p>
+    <div className="flex space-x-3">
+      <a href="tel:2441252" className="flex items-center text-sm text-blue-600 hover:text-blue-800">
+        <Phone size={16} className="mr-1" /> Llamar
+      </a>
+      <a 
+        href="https://maps.google.com/?q=Av. Colón 428, San Miguel de Tucumán, Tucumán" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="flex items-center text-sm text-blue-600 hover:text-blue-800"
+      >
+        <ExternalLink size={16} className="mr-1" /> Ver en mapa
+      </a>
+    </div>
+  </div>
+</div>
+
+        </div>
+
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <h3 className="text-xl font-bold text-gray-800 p-4 border-b border-gray-200">Encuéntranos en el mapa</h3>
+          <div className="aspect-w-16 aspect-h-9 h-80">
+            <iframe 
+              className="w-full h-full"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3282.486426939992!2d-65.2172!3d-26.8355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x942243be7c5e62b1%3A0x7a6f24f4d8e91b9a!2sAv%20Juan%20B%20Justo%201111%2C%20San%20Miguel%20de%20Tucum%C3%A1n%2C%20Tucum%C3%A1n%2C%20Argentina!5e0!3m2!1ses!2sar!4v1708796498910!5m2!1ses!2sar"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8">
+      <footer className="bg-gray-800 text-white py-10">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Columna 1: Contacto */}
             <FadeInSection delay={0.1}>
-              <h4 className="text-lg font-semibold mb-4 sm:text-white">Contacto</h4>
-              <p>Email: alenortconsultas@gmail.com</p>
-              <p>Teléfono: 3812224766</p>
-              <p>Fijo: 2441252</p>
+              <h4 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Contacto</h4>
+              <ul className="space-y-2">
+                <li className="flex items-center">
+                  <Mail className="mr-2 text-yellow-400" size={18} />
+                  <p>Email: alenortconsultas@gmail.com</p>
+                </li>
+                <li className="flex items-center">
+                  <Phone className="mr-2 text-yellow-400" size={18} />
+                  <p>Móvil: 3812224766</p>
+                </li>
+                <li className="flex items-center">
+                  <Phone className="mr-2 text-yellow-400" size={18} />
+                  <p>Fijo: 2441252</p>
+                </li>
+              </ul>
             </FadeInSection>
 
             {/* Columna 2: Horario */}
             <FadeInSection delay={0.15}>
-              <h4 className="text-lg font-semibold mb-4 sm:text-white">Horario</h4>
-              <p>Lunes a Viernes: 8:30 - 13:30 y 17:30 a 21:00</p>
-              <p>Sábado: 8:30 - 14:00</p>
+              <h4 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Horario de Atención</h4>
+              <ul className="space-y-2">
+                <li className="flex items-center">
+                  <Calendar className="mr-2 text-yellow-400" size={18} />
+                  <p>Lunes a Viernes: 8:30 - 13:30 y 17:30 a 21:00</p>
+                </li>
+                <li className="flex items-center">
+                  <Calendar className="mr-2 text-yellow-400" size={18} />
+                  <p>Sábado: 8:30 - 14:00</p>
+                </li>
+                <li className="flex items-center">
+                  <Calendar className="mr-2 text-yellow-400" size={18} />
+                  <p>Domingo: Cerrado</p>
+                </li>
+              </ul>
             </FadeInSection>
 
             {/* Columna 3: Redes Sociales */}
             <FadeInSection delay={0.2}>
-              <h4 className="text-lg font-semibold mb-4 sm:text-white">Síguenos</h4>
-              <div className="flex space-x-4">
-                <a
-                  href="https://www.facebook.com/p/Alenort-Distribuidora-Avicola-100070169381073/"
-                  className="text-white hover:text-blue-500 transition-colors transform hover:scale-110"
-                >
-                  <Facebook size={24} />
-                </a>
-                <a
-                  href="https://www.instagram.com/alenort.distribuidoraavicola/#"
-                  className="text-white hover:text-pink-500 transition-colors transform hover:scale-110"
-                >
-                  <Instagram size={24} />
-                </a>
+              <h4 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Síguenos</h4>
+              <div className="mb-6">
+                <div className="flex space-x-4 mb-4">
+                  <a
+                    href="https://www.facebook.com/p/Alenort-Distribuidora-Avicola-100070169381073/"
+                    className="text-white hover:text-blue-400 transition-colors duration-300 transform hover:scale-110"
+                    aria-label="Facebook"
+                  >
+                    <Facebook size={28} />
+                  </a>
+                  <a
+                    href="https://www.instagram.com/alenort.distribuidoraavicola/"
+                    className="text-white hover:text-pink-400 transition-colors duration-300 transform hover:scale-110"
+                    aria-label="Instagram"
+                  >
+                    <Instagram size={28} />
+                  </a>
+                  <a
+                    href="https://wa.me/5493812224766"
+                    className="text-white hover:text-green-400 transition-colors duration-300 transform hover:scale-110"
+                    aria-label="WhatsApp"
+                  >
+                    <MessageCircle size={28} />
+                  </a>
+                </div>
+                <p className="text-gray-300">Mantente al día con nuestras ofertas y novedades.</p>
               </div>
+
+              {/* Botón de Contáctanos */}
+              <a
+                href="/contacto"
+                className="inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                Contáctanos
+              </a>
             </FadeInSection>
           </div>
+
+          {/* Ubicación */}
+          <FadeInSection delay={0.25}>
+            <div className="w-full h-px bg-gray-700 my-8" />
+            <div className="text-center mb-6">
+              <h4 className="text-lg font-semibold mb-2 text-white">Ubicación</h4>
+              <p className="flex items-center justify-center">
+                <MapPin className="mr-2 text-yellow-400" size={18} />
+                San Miguel de Tucumán, Tucumán, Argentina
+              </p>
+            </div>
+          </FadeInSection>
 
           {/* Línea divisoria */}
           <div className="w-full h-px bg-gray-700 my-6" />
 
           {/* Texto de derechos de autor */}
           <div className="text-center text-sm text-gray-400">
-            © {new Date().getFullYear()} Alenort. Todos los derechos reservados.
+            © {new Date().getFullYear()} Alenort Distribuidora Avícola. Todos los derechos reservados.
           </div>
         </div>
       </footer>
