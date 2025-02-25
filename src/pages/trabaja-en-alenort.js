@@ -132,7 +132,7 @@ const TrabajaEnAlenort = () => {
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-4 text-black">
                   <div>
                     <label htmlFor="name" className="block text-gray-700 mb-1 font-medium">
                       Nombre completo *
@@ -143,7 +143,7 @@ const TrabajaEnAlenort = () => {
                       name="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 text-black"
                       required
                     />
                   </div>
@@ -157,7 +157,7 @@ const TrabajaEnAlenort = () => {
                       name="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 text-black"
                       required
                     />
                   </div>
@@ -173,7 +173,7 @@ const TrabajaEnAlenort = () => {
                     name="phone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 text-black"
                   />
                 </div>
 
@@ -187,7 +187,7 @@ const TrabajaEnAlenort = () => {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows="3"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 text-black"
                     placeholder="Cuéntanos más sobre tu experiencia y por qué te gustaría unirte a nuestro equipo"
                   ></textarea>
                 </div>
