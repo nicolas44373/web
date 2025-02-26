@@ -27,7 +27,7 @@ const marcas = [
   { id: 2, imagen: 'cresta1.png', nombre: '', width: 120, height: 100 },
   { id: 3, imagen: 'gta1.png', nombre: '', width: 110, height: 95 },
   { id: 4, imagen: 'maccain.png', nombre: '', width: 115, height: 85 },
-  { id: 5, imagen: 'sie.png', nombre: '', width: 135, height: 108 },
+  { id: 5, imagen: 'sie.png', nombre: '', width: 200, height: 108 },
   { id: 6, imagen: 'sansebastian.png', nombre: '', width: 170, height: 130 },
   { id: 7, imagen: 'gran.png', nombre: '', width: 170, height: 130 },
   { id: 8, imagen: 'sha.png', nombre: '', width: 170, height: 130 },
@@ -220,17 +220,15 @@ export default function Home() {
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
               >
                 {sucursalImages.map((img, index) => (
-                    <div key={index} className="min-w-full h-full flex-shrink-0">
-                          <Image 
-                           src={`/${img}`} 
-                           alt={`Sucursal ${index + 1}`} 
-                              className="w-full h-full object-full"
-                               onError={(e) => {
-                              e.target.onerror = null;
-                                e.target.src = "/suc1.webp"; // Imagen de respaldo en caso de error
-                               }}
-                           />
-                      </div>
+                    <div key={index} className="relative min-w-full h-64 flex-shrink-0">
+                    <Image 
+                      src={`/${img}`} 
+                      alt={`Sucursal ${index + 1}`} 
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  
                         ))} 
                     </div>
               
