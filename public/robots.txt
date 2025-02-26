@@ -1,3 +1,22 @@
 User-agent: *
 Allow: /
-https://www.alenort.com/sitemap.xml
+Disallow: /admin/
+Disallow: /privado/
+Disallow: /temp/
+Disallow: /wp-admin/
+Disallow: /includes/
+Disallow: /cgi-bin/
+
+# Archivos específicos a no indexar
+Disallow: /*.pdf$
+Disallow: /*.doc$
+Disallow: /*.xls$
+
+# Evitar indexación de parámetros de URL
+Disallow: /*?*
+
+# Dirección del sitemap
+Sitemap: https://www.alenort.com/sitemap.xml
+
+# Retraso entre solicitudes (en segundos) para no sobrecargar el servidor
+Crawl-delay: 10
