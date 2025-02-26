@@ -22,24 +22,26 @@ const productos = [
 ];
 
 // Predefine las marcas fuera del componente
+
 const marcas = [
-  { id: 1, imagen: 'becar1.png', nombre: '', width: 160, height: 130 },
-  { id: 2, imagen: 'cresta1.png', nombre: '', width: 120, height: 100 },
-  { id: 3, imagen: 'gta1.png', nombre: '', width: 110, height: 95 },
-  { id: 4, imagen: 'maccain.png', nombre: '', width: 115, height: 85 },
-  { id: 5, imagen: 'sie.png', nombre: '', width: 200, height: 108 },
-  { id: 6, imagen: 'sansebastian.png', nombre: '', width: 170, height: 130 },
-  { id: 7, imagen: 'gran.png', nombre: '', width: 170, height: 130 },
-  { id: 8, imagen: 'sha.png', nombre: '', width: 170, height: 130 },
-  { id: 9, imagen: 'vidal.webp', nombre: '', width: 170, height: 130 },
-  { id: 10, imagen: 'soli.png', nombre: '', width: 170, height: 130 }
+  { id: 1, imagen: 'becar1.png', width: 160, height: 130 },
+  { id: 2, imagen: 'cresta1.png', width: 120, height: 100 },
+  { id: 3, imagen: 'gta1.png', width: 110, height: 95 },
+  { id: 4, imagen: 'maccain.png', width: 115, height: 85 },
+  { id: 5, imagen: 'sie.png', width: 200, height: 108 },
+  { id: 6, imagen: 'sansebastian.png', width: 170, height: 130 },
+  { id: 7, imagen: 'gran.png', width: 170, height: 130 },
+  { id: 8, imagen: 'sha.png', width: 170, height: 130 },
+  { id: 9, imagen: 'vidal.webp', width: 170, height: 130 },
+  { id: 10, imagen: 'soli.png', width: 170, height: 130 }
 ];
+
+
+
 
 // Imágenes para el carrusel de sucursales
 const sucursalImages = [
-  'suc1.webp',   // Reemplaza estos con tus imágenes rea
-  
-  
+  'suc1.webp',   // Reemplaza estos con tus imágenes real
 ];
 
 // Crea componentes con animaciones ligeras 
@@ -143,28 +145,29 @@ export default function Home() {
 
       {/* Nuestras Marcas Section */}
       <div className="py-12 md:py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <FadeInSection className="text-3xl font-bold text-center mb-8 md:mb-12 text-black">
-            Nuestras Marcas
-          </FadeInSection>
-          
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
-            {marcas.map((marca, index) => (
-              <FadeInSection key={marca.id} delay={index * 0.05} className="flex justify-center">
-                <div className="relative grayscale hover:grayscale-0 transition-all duration-300 transform hover:scale-110">
-                  <Image
-                    src={`/${marca.imagen}`}
-                    alt={marca.nombre}
-                    width={marca.width}
-                    height={marca.height}
-                    className="transition-all duration-300"
-                  />
-                </div>
-              </FadeInSection>
-            ))}
+  <div className="max-w-6xl mx-auto px-4">
+    <FadeInSection className="text-3xl font-bold text-center mb-8 md:mb-12 text-black">
+      Nuestras Marcas
+    </FadeInSection>
+    
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
+      {marcas.map((marca, index) => (
+        <FadeInSection key={marca.id} delay={index * 0.05} className="flex justify-center">
+          <div className="relative grayscale hover:grayscale-0 transition-all duration-300 transform hover:scale-110">
+            <Image
+              src={`/${marca.imagen}`} // Ruta relativa a /public
+              alt={marca.imagen}
+              width={marca.width}
+              height={marca.height}
+              style={{ objectFit: 'contain', width: '100%', height: 'auto' }} // Ajuste del tamaño
+            />
           </div>
-        </div>
-      </div>
+        </FadeInSection>
+      ))}
+    </div>
+  </div>
+</div>
+
 
       {/* Productos Section */}
       <div className="py-12 md:py-16 bg-amber-50">
