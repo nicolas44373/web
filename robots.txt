@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+https://www.alenort.com/sitemap.xml
