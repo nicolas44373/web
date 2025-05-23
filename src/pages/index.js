@@ -119,36 +119,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      {/* Sección QR Code */}
-      <div className="py-12 md:py-16 bg-gradient-to-r from-amber-100 to-yellow-100">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <FadeInSection className="mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-              ¡Escanea Para Ver Nuestra Lista de Precios!
-            </h2>
-            <p className="text-gray-600 text-lg mb-6">
-              Escanea nuestro código QR
-            </p>
-          </FadeInSection>
-          
-          <FadeInSection delay={0.2} className="flex justify-center">
-            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 max-w-sm">
-              <div className="relative w-48 h-48 md:w-80 md:h-80 mx-auto mb-4">
-                <Image
-                  src="/frame.png"
-                  alt="Código QR de Alenort"
-                  fill
-                  className="object-contain rounded-lg"
-                  sizes="(max-width: 768px) 192px, 256px"
-                />
-              </div>
-              <p className="text-sm text-gray-500 font-medium">
-                Escanea con la cámara de tu teléfono
-              </p>
-            </div>
-          </FadeInSection>
-        </div>
-      </div>
+      
 
       {/* Características */}
       <div className="py-12 md:py-16 bg-white">
