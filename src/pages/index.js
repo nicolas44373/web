@@ -124,10 +124,10 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <FadeInSection className="mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-              ¡Escanea y Conecta!
+              ¡Escanea para ver nuestra lista de precios!
             </h2>
             <p className="text-gray-600 text-lg mb-6">
-              Escanea nuestro código QR para acceder rápidamente a nuestros servicios
+              Escanea nuestro código QR para acceder rápidamente
             </p>
           </FadeInSection>
           
