@@ -135,7 +135,7 @@ export default function Home() {
             <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 max-w-sm">
               <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-4">
                 <Image
-                  src="/qr-code.png"
+                  src="/frame.png"
                   alt="Código QR de Alenort"
                   fill
                   className="object-contain rounded-lg"
