@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { FileText, CheckCircle, Upload, Send, X, Users, TrendingUp, Heart, Zap, Instagram, Facebook, MessageCircle, ArrowRight } from 'lucide-react';
+import { FileText, CheckCircle, Upload, Send, X, Users, TrendingUp, Heart, Zap, Instagram, Facebook, MessageCircle } from 'lucide-react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Navbar from './components/Navbar';

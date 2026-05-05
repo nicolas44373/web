@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Navbar from '@/pages/components/Navbar';
 import { motion } from 'motion/react';
 import { Mail, Phone, MapPin, Send, User, MessageSquare, CheckCircle, Instagram, Facebook, MessageCircle, Clock } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 const fadeUp = {
