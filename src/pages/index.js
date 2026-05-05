@@ -1,11 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Navbar from '@/pages/components/Navbar';
-import { Truck, Award, Phone, Facebook, Instagram, Mail, Calendar, MessageCircle, MapPin, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { motion } from 'motion/react';
+import {
+  Truck, Award, Phone, Facebook, Instagram, Mail,
+  Calendar, MessageCircle, MapPin, ChevronLeft, ChevronRight,
+  ExternalLink, ShoppingCart
+} from 'lucide-react';
 import Image from 'next/image';
 
+const PRICE_LIST_URL = 'https://qr-six-alpha.vercel.app/';
 
-// Predefine los productos fuera del componente para evitar recreaciones
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i = 0) => ({
+    opacity: 1, y: 0,
+    transition: { duration: 0.6, delay: i * 0.1, ease: 'easeOut' }
+  })
+};
+
 const productos = [
   { id: 1, imagen: 'rebo1.JPG', nombre: 'Bocaditos', descripcion: 'Muzarella, Jamon y Queso, Calabaza y Muzza, Espinaca, Crocante' },
   { id: 2, imagen: 'rebo2.JPG', nombre: 'Patitas de Pollo', descripcion: 'Tradicional, Jamon y Queso, Espinaca y Queso' },
@@ -17,465 +30,469 @@ const productos = [
   { id: 8, imagen: 'filet.JPG', nombre: 'Filet', descripcion: 'IQF, Retail, Bloque' },
   { id: 9, imagen: 'huevo.webp', nombre: 'Huevos', descripcion: 'Originales' },
   { id: 10, imagen: 'lango.avif', nombre: 'Mariscos', descripcion: 'Anillas de Calamar, Langostinos, Rabas, Mejillones, Camarones, Cazuela de mariscos' },
-  { id: 11, imagen: 'salmon.JPG', nombre: 'Pescados', descripcion: 'Merluza, Atun, Salmon, Sabalo' },
-  { id: 12, imagen: 'papas.jpeg', nombre: 'Papas McCain', descripcion: 'Baston, Noisette, Carita' }
+  { id: 11, imagen: 'salmon.JPG', nombre: 'Pescados', descripcion: 'Merluza, Atún, Salmón, Sábalo' },
+  { id: 12, imagen: 'papas.jpeg', nombre: 'Papas McCain', descripcion: 'Bastón, Noisette, Carita' }
 ];
-
-// Predefine las marcas fuera del componente
 
 const marcas = [
   { id: 1, imagen: 'becar1.png', width: 160, height: 130 },
   { id: 2, imagen: 'cresta1.png', width: 120, height: 100 },
   { id: 3, imagen: 'gta1.png', width: 110, height: 95 },
   { id: 4, imagen: 'maccain.png', width: 115, height: 85 },
-  { id: 5, imagen: 'sie.png', width: 200, height: 108 },
+  { id: 5, imagen: 'sie.png', width: 200, height: 108, maxH: 120 },
   { id: 6, imagen: 'sansebastian.png', width: 170, height: 130 },
   { id: 7, imagen: 'gran.png', width: 170, height: 130 },
   { id: 8, imagen: 'sha.png', width: 170, height: 130 },
-  { id: 9, imagen: 'vidal.webp', width: 170, height: 130 },
+  { id: 9, imagen: 'vidal.webp', width: 170, height: 130, maxH: 100 },
   { id: 10, imagen: 'soli.png', width: 170, height: 130 }
 ];
 
+const sucursalImages = ['suc1.webp'];
 
-
-
-// Imágenes para el carrusel de sucursales
-const sucursalImages = [
-  'suc1.webp',   // Reemplaza estos con tus imágenes real
-];
-
-// Crea componentes con animaciones ligeras 
-const FadeInSection = ({ children, delay = 0, className = "" }) => {
-  return (
-    <div 
-      className={`opacity-0 translate-y-4 ${className}`}
-      style={{
-        animation: `fadeIn 0.8s ease forwards ${delay}s`
-      }}
+/* Onda SVG — block + ancho extra + solape evitan la línea blanca en móvil */
+const Wave = ({ from, to }) => (
+  <div className={`${from} relative overflow-hidden leading-[0]`}>
+    <svg
+      viewBox="0 0 1440 60"
+      preserveAspectRatio="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="relative z-[1] block h-12 w-[calc(100%+4px)] max-w-none -left-[2px] -mb-px md:h-16"
+      aria-hidden="true"
     >
-      {children}
-    </div>
-  );
-};
+      <path className={to} d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" />
+    </svg>
+  </div>
+);
 
 export default function Home() {
-  // Estado para el carrusel de sucursales
   const [currentSlide, setCurrentSlide] = useState(0);
+  const hasMultipleSlides = sucursalImages.length > 1;
 
-  // Funciones para controlar el carrusel
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev === sucursalImages.length - 1 ? 0 : prev + 1));
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? sucursalImages.length - 1 : prev - 1));
-  };
-
-  // Auto rotación del carrusel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 5000);
-    return () => clearInterval(interval);
   }, []);
 
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev === 0 ? sucursalImages.length - 1 : prev - 1));
+  }, []);
+
+  useEffect(() => {
+    if (!hasMultipleSlides) return;
+    const interval = setInterval(nextSlide, 5000);
+    return () => clearInterval(interval);
+  }, [nextSlide, hasMultipleSlides]);
+
   return (
-    <div className="min-h-screen bg-amber-50">
-      {/* Navbar */}
-      <Navbar className="fixed top-0 left-0 w-full z-50" /> 
-      
-      {/* Hero Section - Optimizada */}
-      <div className="relative w-full h-[200px] sm:h-[300px] md:h-[350px] lg:h-[400px]">
-        {/* Versión móvil */}
-        <div className="absolute top-0 left-0 w-full h-full block sm:hidden">
-          <Image 
-            src="/alenort2.png" 
-            alt="Logo de la empresa"
-            fill
-            sizes="100vw"
+    <div className="min-h-screen bg-white overflow-x-hidden">
+      <Navbar />
+
+      {/* ── HERO ───────────────────────────────────────────── */}
+      <section className="w-full bg-white flex items-center justify-center px-6 pt-20 pb-2 sm:pt-24 sm:pb-4 md:pt-28 md:pb-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, ease: 'easeOut' }}
+          className="w-full max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-4xl"
+        >
+          <Image
+            src="/alenort2.png"
+            alt="Alenort Distribuidora Avícola"
+            width={900}
+            height={340}
             priority
-            className="object-contain hover:scale-105 transition-transform duration-500"
+            className="w-full h-auto"
+            style={{ mixBlendMode: 'multiply' }}
           />
-        </div>
-        
-        {/* Versión desktop */}
-        <div className="absolute top-0 left-0 w-full h-full hidden sm:block">
-          <Image 
-            src="/alenort2.png" 
-            alt="Logo de la empresa"
-            fill
-            sizes="100vw"
-            priority
-            className="object-cover object-center hover:scale-105 transition-transform duration-500"
-          />
-        </div>
-        
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-start px-4 sm:px-8 md:px-12 lg:px-16">
-          <div className="w-full max-w-4xl">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white text-left drop-shadow-lg opacity-0 animate-[fadeIn_0.8s_ease_0.5s_forwards]">
-              {/* Texto del hero */}
-            </h1>
-          </div>
-        </div>
-      </div>
-      {/* Sección QR Code */}
-      <div className="py-12 md:py-16 bg-gradient-to-r from-amber-100 to-yellow-100">
+        </motion.div>
+      </section>
+
+      {/* ola blanco → amber-50 */}
+      <Wave from="bg-white" to="fill-amber-50" />
+
+      {/* ── QR / LISTA DE PRECIOS ──────────────────────────── */}
+      <section className="bg-amber-50 py-14 md:py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <FadeInSection className="mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-              ¡Escanea para ver nuestra lista de precios!
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-900 mb-3">
+              ¡Consultá nuestra lista de precios!
             </h2>
-            <p className="text-gray-600 text-lg mb-6">
-              Escanea nuestro código QR para acceder rápidamente
+            <p className="text-amber-700 text-lg mb-10">
+              Escaneá el QR o hacé clic en el botón — siempre actualizado.
             </p>
-          </FadeInSection>
-          
-          <FadeInSection delay={0.2} className="flex justify-center">
-            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 max-w-sm">
-              <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-4">
+          </motion.div>
+
+          <div className="flex flex-col sm:flex-row gap-8 items-center justify-center">
+            {/* QR card */}
+            <motion.div
+              variants={fadeUp} custom={1} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              whileHover={{ scale: 1.05 }}
+              className="bg-yellow-50 border-2 border-amber-200 p-6 md:p-8 rounded-2xl shadow-xl max-w-xs"
+            >
+              <div className="relative w-48 h-48 md:w-56 md:h-56 mx-auto mb-4">
                 <Image
                   src="/frame.png"
-                  alt="Código QR de Alenort"
+                  alt="Código QR lista de precios Alenort"
                   fill
                   className="object-contain rounded-lg"
-                  sizes="(max-width: 768px) 192px, 256px"
+                  sizes="(max-width: 768px) 192px, 224px"
                 />
               </div>
-              <p className="text-sm text-gray-500 font-medium">
-                Escanea con la cámara de tu teléfono
-              </p>
-            </div>
-          </FadeInSection>
-        </div>
-      </div>
+              <p className="text-sm text-amber-700 font-medium">Escaneá con la cámara de tu teléfono</p>
+            </motion.div>
 
-      {/* Características */}
-      <div className="py-12 md:py-16 bg-white">
+            {/* separador */}
+            <div className="flex sm:flex-col items-center gap-3 text-amber-400">
+              <div className="w-12 sm:w-px h-px sm:h-12 bg-amber-300" />
+              <span className="text-sm font-bold uppercase tracking-widest">o</span>
+              <div className="w-12 sm:w-px h-px sm:h-12 bg-amber-300" />
+            </div>
+
+            {/* botón */}
+            <motion.div
+              variants={fadeUp} custom={2} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="flex flex-col items-center gap-4"
+            >
+              <p className="text-amber-700 font-medium max-w-xs text-center">
+                Accedé directamente desde cualquier dispositivo
+              </p>
+              <motion.a
+                href={PRICE_LIST_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.07, boxShadow: '0 0 30px rgba(234,179,8,0.5)' }}
+                whileTap={{ scale: 0.96 }}
+                className="inline-flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-4 px-8 rounded-xl shadow-lg text-lg"
+              >
+                <ShoppingCart size={22} />
+                Ver Lista de Precios
+                <ExternalLink size={16} />
+              </motion.a>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ola amber-50 → amber-100 */}
+      <Wave from="bg-amber-50" to="fill-amber-100" />
+
+      {/* ── ¿POR QUÉ ELEGIR ALENORT? ─────────────────────── */}
+      <section className="bg-amber-100 py-14 md:py-20">
         <div className="max-w-6xl mx-auto px-4">
-          <FadeInSection className="text-3xl font-bold text-center mb-8 md:mb-12 text-black">
+          <motion.h2
+            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+            className="text-3xl md:text-4xl font-bold text-center mb-12 text-amber-900"
+          >
             ¿Por qué elegir Alenort?
-          </FadeInSection>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-black">
-            {[ 
-              { icon: <Truck className="mx-auto h-12 w-12 text-black mb-4" />, title: "Stock Permanente", description: "Podras encontrar una amplia variedad de productos y stock permanente de las mismas." },
-              { icon: <Award className="mx-auto h-12 w-12 text-black mb-4" />, title: "Máxima Calidad", description: "Productos frescos y seleccionados" },
-              { icon: <Phone className="mx-auto h-12 w-12 text-black mb-4" />, title: "Atención Personalizada", description: "Servicio al cliente excepcional" }
-            ].map((item, index) => (
-              <FadeInSection key={index} delay={index * 0.1} className="text-center text-black p-6 bg-amber-100 rounded-lg hover:bg-amber-200 transition-colors duration-300">
+          </motion.h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: <Truck className="h-12 w-12 text-yellow-600 mb-4 mx-auto" />, title: 'Stock Permanente', desc: 'Amplia variedad de productos con stock garantizado todo el año.' },
+              { icon: <Award className="h-12 w-12 text-yellow-600 mb-4 mx-auto" />, title: 'Máxima Calidad', desc: 'Productos frescos y seleccionados de las mejores marcas del mercado.' },
+              { icon: <Phone className="h-12 w-12 text-yellow-600 mb-4 mx-auto" />, title: 'Atención Personalizada', desc: 'Un equipo dedicado para asesorarte en cada compra.' }
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                variants={fadeUp} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }}
+                whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(180,83,9,0.15)' }}
+                className="text-center p-8 bg-yellow-50 rounded-2xl border border-amber-200 transition-shadow duration-300"
+              >
                 {item.icon}
-                <h3 className="text-xl font-semibold mb-2 sm:text-black">{item.title}</h3>
-                <p className="text-gray-600 sm:text-black">{item.description}</p>
-              </FadeInSection>
+                <h3 className="text-xl font-bold mb-2 text-amber-900">{item.title}</h3>
+                <p className="text-amber-800">{item.desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Nuestras Marcas Section */}
-      <div className="py-12 md:py-16 bg-white">
-  <div className="max-w-6xl mx-auto px-4">
-    <FadeInSection className="text-3xl font-bold text-center mb-8 md:mb-12 text-black">
-      Nuestras Marcas
-    </FadeInSection>
-    
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
-      {marcas.map((marca, index) => (
-        <FadeInSection key={marca.id} delay={index * 0.05} className="flex justify-center">
-          <div className="relative grayscale hover:grayscale-0 transition-all duration-300 transform hover:scale-110">
-            <Image
-              src={`/${marca.imagen}`} // Ruta relativa a /public
-              alt={marca.imagen}
-              width={marca.width}
-              height={marca.height}
-              style={{ objectFit: 'contain', width: '100%', height: 'auto' }} // Ajuste del tamaño
-            />
+      {/* ola amber-100 → white */}
+      <Wave from="bg-amber-100" to="fill-white" />
+
+      {/* ── NUESTRAS MARCAS ───────────────────────────────── */}
+      <section className="bg-white py-14 md:py-20">
+        <div className="max-w-5xl mx-auto px-4">
+          <motion.h2
+            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+            className="text-3xl md:text-4xl font-bold text-center mb-12 text-amber-900"
+          >
+            Nuestras Marcas
+          </motion.h2>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+            {marcas.map((marca, i) => (
+              <motion.div
+                key={marca.id}
+                variants={fadeUp} custom={i * 0.05} initial="hidden" whileInView="visible" viewport={{ once: true }}
+                whileHover={{ y: -4, boxShadow: '0 8px 24px rgba(180,83,9,0.15)' }}
+                className="group flex items-center justify-center bg-white border border-amber-100 rounded-xl p-4 h-24 cursor-pointer"
+              >
+                <Image
+                  src={`/${marca.imagen}`}
+                  alt={`Marca ${marca.imagen.split('.')[0]}`}
+                  width={marca.width}
+                  height={marca.height}
+                  className="grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out"
+                  style={{ objectFit: 'contain', maxHeight: `${marca.maxH ?? 64}px`, width: 'auto', height: 'auto' }}
+                />
+              </motion.div>
+            ))}
           </div>
-        </FadeInSection>
-      ))}
-    </div>
-  </div>
-</div>
+        </div>
+      </section>
 
+      {/* ola white → amber-50 */}
+      <Wave from="bg-white" to="fill-amber-50" />
 
-      {/* Productos Section */}
-      <div className="py-12 md:py-16 bg-amber-50">
+      {/* ── NUESTROS PRODUCTOS ────────────────────────────── */}
+      <section className="bg-amber-50 py-14 md:py-20">
         <div className="max-w-6xl mx-auto px-4">
-          <FadeInSection className="text-3xl font-bold text-center mb-8 md:mb-12 text-black hover:scale-105 transition-transform duration-300">
-            Nuestros Productos
-          </FadeInSection>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {productos.map((producto, index) => (
-              <FadeInSection key={producto.id} delay={index * 0.05} className="group bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+          <motion.div
+            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-900 mb-3">Nuestros Productos</h2>
+            <a
+              href={PRICE_LIST_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-amber-700 hover:text-amber-900 text-sm font-semibold underline underline-offset-2 transition-colors"
+            >
+              Ver lista de precios completa <ExternalLink size={13} />
+            </a>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {productos.map((producto, i) => (
+              <motion.div
+                key={producto.id}
+                variants={fadeUp} custom={i * 0.04} initial="hidden" whileInView="visible" viewport={{ once: true }}
+                whileHover={{ y: -8, boxShadow: '0 24px 48px rgba(180,83,9,0.18)' }}
+                className="group bg-yellow-50 rounded-2xl overflow-hidden border border-amber-200 shadow-md transition-shadow duration-300"
+              >
                 <div className="relative overflow-hidden">
-                  <Image 
+                  <Image
                     src={`/${producto.imagen}`}
                     alt={producto.nombre}
                     width={400}
                     height={300}
                     className="w-full h-48 object-cover transform group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
-                
-                <div className="p-6 transform translate-y-0 group-hover:translate-y-1 transition-transform duration-300">
-                  <h3 className="text-xl font-semibold mb-2 text-gray-800 sm:text-black group-hover:text-amber-600 transition-colors duration-300">
+                <div className="p-5">
+                  <h3 className="text-lg font-bold mb-1 text-amber-900 group-hover:text-yellow-600 transition-colors duration-300">
                     {producto.nombre}
                   </h3>
-                  <p className="text-gray-600 sm:text-black group-hover:text-gray-700 transition-colors duration-300">
-                    {producto.descripcion}
-                  </p>
+                  <p className="text-amber-700 text-sm leading-relaxed">{producto.descripcion}</p>
                 </div>
-              </FadeInSection>
+              </motion.div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-     {/* Sección de Nuestras Sucursales - CON CARRUSEL FUNCIONAL */}
-     <section className="py-16 bg-gray-100">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">NUESTRAS SUCURSALES</h2>
-          <div className="w-24 h-1 bg-yellow-500 mx-auto"></div>
-          <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-            Visita nuestras tiendas donde encontrarás la mejor calidad en productos avícolas y atención personalizada.
-          </p>
-        </div>
+      {/* ola amber-50 → amber-100 */}
+      <Wave from="bg-amber-50" to="fill-amber-100" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="relative h-64">
-              <div 
-                className="h-full w-full flex transition-transform duration-500 ease-in-out" 
-                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-              >
-                {sucursalImages.map((img, index) => (
-                    <div key={index} className="relative min-w-full h-64 flex-shrink-0">
-                    <Image 
-                      src={`/${img}`} 
-                      alt={`Sucursal ${index + 1}`} 
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  
-                        ))} 
+      {/* ── SUCURSALES ────────────────────────────────────── */}
+      <section className="bg-amber-100 py-14 md:py-20">
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div
+            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-900 mb-3">NUESTRA SUCURSAL</h2>
+            <div className="w-24 h-1 bg-yellow-500 mx-auto rounded-full" />
+            <p className="text-amber-800 mt-4 max-w-2xl mx-auto">
+              Visitanos y encontrá la mejor calidad en productos avícolas con atención personalizada.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            {/* Carrusel */}
+            <motion.div
+              variants={fadeUp} custom={0} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="bg-yellow-50 border border-amber-200 rounded-2xl shadow-lg overflow-hidden"
+            >
+              <div className="relative h-72">
+                <div
+                  className="h-full w-full flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                >
+                  {sucursalImages.map((img, index) => (
+                    <div key={index} className="relative min-w-full h-72 flex-shrink-0">
+                      <Image src={`/${img}`} alt="Sucursal Juan B. Justo 1111" fill className="object-cover" />
                     </div>
-              
-              <button 
-                onClick={prevSlide}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button 
-                onClick={nextSlide}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
-            <div className="flex justify-center p-4">
-              {sucursalImages.map((_, index) => (
-                <div 
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`w-3 h-3 rounded-full mx-1 cursor-pointer transition-all ${
-                    currentSlide === index ? "bg-yellow-500" : "bg-gray-300"
-                  }`}
-                ></div>
-              ))}
-            </div>
+                  ))}
+                </div>
+                {hasMultipleSlides && (
+                  <>
+                    <button onClick={prevSlide} className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all" aria-label="Anterior">
+                      <ChevronLeft size={20} />
+                    </button>
+                    <button onClick={nextSlide} className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all" aria-label="Siguiente">
+                      <ChevronRight size={20} />
+                    </button>
+                  </>
+                )}
+              </div>
+              {hasMultipleSlides && (
+                <div className="flex justify-center gap-2 py-3">
+                  {sucursalImages.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`w-2.5 h-2.5 rounded-full transition-all ${currentSlide === index ? 'bg-yellow-500 scale-125' : 'bg-amber-300'}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </motion.div>
+
+            {/* Info */}
+            <motion.div
+              variants={fadeUp} custom={1} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="bg-yellow-50 border border-amber-200 rounded-2xl shadow-lg p-6 flex flex-col justify-center"
+            >
+              <h3 className="text-xl font-bold text-amber-900 mb-6 border-b border-amber-200 pb-4">Información de la Sucursal</h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <MapPin className="text-yellow-600 mt-0.5 flex-shrink-0" size={22} />
+                  <div>
+                    <p className="font-semibold text-amber-900 text-lg">Juan B. Justo 1111</p>
+                    <p className="text-amber-700 text-sm">San Miguel de Tucumán, Tucumán</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Phone className="text-yellow-600 mt-0.5 flex-shrink-0" size={22} />
+                  <div>
+                    <p className="text-amber-800 font-medium">Fijo: <a href="tel:2441252" className="text-amber-600 hover:text-amber-900 underline">2441252</a></p>
+                    <p className="text-amber-800 font-medium">Móvil: <a href="tel:+5493812224766" className="text-amber-600 hover:text-amber-900 underline">+549 381 222-4766</a></p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Calendar className="text-yellow-600 mt-0.5 flex-shrink-0" size={22} />
+                  <div className="text-sm text-amber-800 space-y-1">
+                    <p><span className="font-semibold text-amber-900">Lun–Vie:</span> 8:30–13:30 y 17:30–21:00</p>
+                    <p><span className="font-semibold text-amber-900">Sábado:</span> 8:30–14:00</p>
+                    <p><span className="font-semibold text-amber-900">Domingo:</span> Cerrado</p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a href="https://maps.google.com/?q=Av.+Juan+B.+Justo+1111,+San+Miguel+de+Tucumán,+Tucumán" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-sm font-medium bg-amber-200 hover:bg-amber-300 text-amber-900 border border-amber-300 py-2 px-4 rounded-lg transition-colors">
+                  <ExternalLink size={15} /> Ver en Google Maps
+                </a>
+                <a href="https://wa.me/5493812224766" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-sm font-medium bg-amber-200 hover:bg-amber-300 text-amber-900 border border-amber-300 py-2 px-4 rounded-lg transition-colors">
+                  <MessageCircle size={15} /> WhatsApp
+                </a>
+              </div>
+            </motion.div>
           </div>
-          
-          <div className="bg-white rounded-lg shadow-lg p-6">
-  <h3 className="text-xl font-bold text-gray-800 mb-4">Información de Sucursales</h3>
 
-  {/* Sucursal Juan B. Justo */}
-  <div className="mb-6 pb-6 border-b border-gray-200">
-    <h4 className="font-semibold text-lg text-gray-800 mb-2">
-      <MapPin className="inline-block mr-2 text-yellow-500" size={20} />
-      Sucursal Juan B. Justo
-    </h4>
-    <p className="text-gray-600 mb-2">Av. Juan B. Justo 1111</p>
-    <p className="text-gray-600 mb-3">San Miguel de Tucumán, Tucumán</p>
-    <div className="flex space-x-3">
-      <a href="tel:2441252" className="flex items-center text-sm text-blue-600 hover:text-blue-800">
-        <Phone size={16} className="mr-1" /> Llamar
-      </a>
-      <a 
-        href="https://maps.google.com/?q=Av. Juan B. Justo 1111, San Miguel de Tucumán, Tucumán" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="flex items-center text-sm text-blue-600 hover:text-blue-800"
-      >
-        <ExternalLink size={16} className="mr-1" /> Ver en mapa
-      </a>
-    </div>
-  </div>
-
-  {/* Sucursal Av. Colón 428 */}
-  <div>
-    <h4 className="font-semibold text-lg text-gray-800 mb-2">
-      <MapPin className="inline-block mr-2 text-yellow-500" size={20} />
-      Sucursal Av. Colón
-    </h4>
-    <p className="text-gray-600 mb-2">Av. Colón 428</p>
-    <p className="text-gray-600 mb-3">San Miguel de Tucumán, Tucumán</p>
-    <div className="flex space-x-3">
-      <a href="tel:2441252" className="flex items-center text-sm text-blue-600 hover:text-blue-800">
-        <Phone size={16} className="mr-1" /> Llamar
-      </a>
-      <a 
-        href="https://maps.google.com/?q=Av. Colón 428, San Miguel de Tucumán, Tucumán" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="flex items-center text-sm text-blue-600 hover:text-blue-800"
-      >
-        <ExternalLink size={16} className="mr-1" /> Ver en mapa
-      </a>
-    </div>
-  </div>
-</div>
-
+          {/* Mapa */}
+          <motion.div
+            variants={fadeUp} custom={2} initial="hidden" whileInView="visible" viewport={{ once: true }}
+            className="bg-yellow-50 border border-amber-200 rounded-2xl shadow-lg overflow-hidden"
+          >
+            <h3 className="text-lg font-bold text-amber-900 px-5 py-4 border-b border-amber-200">Encuéntranos en el mapa</h3>
+            <div className="h-80">
+              <iframe
+                className="w-full h-full"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3282.486426939992!2d-65.2172!3d-26.8355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x942243be7c5e62b1%3A0x7a6f24f4d8e91b9a!2sAv%20Juan%20B%20Justo%201111%2C%20San%20Miguel%20de%20Tucum%C3%A1n%2C%20Tucum%C3%A1n%2C%20Argentina!5e0!3m2!1ses!2sar!4v1708796498910!5m2!1ses!2sar"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Mapa sucursal Alenort Juan B. Justo 1111"
+              />
+            </div>
+          </motion.div>
         </div>
+      </section>
 
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <h3 className="text-xl font-bold text-gray-800 p-4 border-b border-gray-200">Encuéntranos en el mapa</h3>
-          <div className="aspect-w-16 aspect-h-9 h-80">
-            <iframe 
-              className="w-full h-full"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3282.486426939992!2d-65.2172!3d-26.8355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x942243be7c5e62b1%3A0x7a6f24f4d8e91b9a!2sAv%20Juan%20B%20Justo%201111%2C%20San%20Miguel%20de%20Tucum%C3%A1n%2C%20Tucum%C3%A1n%2C%20Argentina!5e0!3m2!1ses!2sar!4v1708796498910!5m2!1ses!2sar"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </div>
-        </div>
-      </div>
-    </section>
+      {/* ola amber-100 → stone-900 */}
+      <Wave from="bg-amber-100" to="fill-stone-900" />
 
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-10">
+      {/* ── FOOTER ────────────────────────────────────────── */}
+      <footer className="bg-stone-900 text-white py-12">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Columna 1: Contacto */}
-            <FadeInSection delay={0.1}>
-              <h4 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Contacto</h4>
+            <motion.div variants={fadeUp} custom={0} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+              <h4 className="text-xl font-semibold mb-4 text-yellow-400 border-b border-stone-700 pb-2">Contacto</h4>
               <ul className="space-y-2">
-                <li className="flex items-center">
-                  <Mail className="mr-2 text-yellow-400" size={18} />
-                  <p>Email: alenortconsultas@gmail.com</p>
+                <li className="flex items-center gap-2">
+                  <Mail className="text-yellow-400 flex-shrink-0" size={18} />
+                  <a href="mailto:alenortconsultas@gmail.com" className="hover:text-yellow-300 transition-colors text-sm">alenortconsultas@gmail.com</a>
                 </li>
-                <li className="flex items-center">
-                  <Phone className="mr-2 text-yellow-400" size={18} />
-                  <p>Móvil: 3812224766</p>
+                <li className="flex items-center gap-2">
+                  <Phone className="text-yellow-400 flex-shrink-0" size={18} />
+                  <a href="tel:+5493812224766" className="hover:text-yellow-300 transition-colors text-sm">Móvil: +549 381 222-4766</a>
                 </li>
-                <li className="flex items-center">
-                  <Phone className="mr-2 text-yellow-400" size={18} />
-                  <p>Fijo: 2441252</p>
+                <li className="flex items-center gap-2">
+                  <Phone className="text-yellow-400 flex-shrink-0" size={18} />
+                  <a href="tel:2441252" className="hover:text-yellow-300 transition-colors text-sm">Fijo: 2441252</a>
                 </li>
               </ul>
-            </FadeInSection>
+            </motion.div>
 
-            {/* Columna 2: Horario */}
-            <FadeInSection delay={0.15}>
-              <h4 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Horario de Atención</h4>
-              <ul className="space-y-2">
-                <li className="flex items-center">
-                  <Calendar className="mr-2 text-yellow-400" size={18} />
-                  <p>Lunes a Viernes: 8:30 - 13:30 y 17:30 a 21:00</p>
-                </li>
-                <li className="flex items-center">
-                  <Calendar className="mr-2 text-yellow-400" size={18} />
-                  <p>Sábado: 8:30 - 14:00</p>
-                </li>
-                <li className="flex items-center">
-                  <Calendar className="mr-2 text-yellow-400" size={18} />
-                  <p>Domingo: Cerrado</p>
-                </li>
+            <motion.div variants={fadeUp} custom={1} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+              <h4 className="text-xl font-semibold mb-4 text-yellow-400 border-b border-stone-700 pb-2">Horario de Atención</h4>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2"><Calendar className="text-yellow-400 flex-shrink-0 mt-0.5" size={16} /><span>Lun–Vie: 8:30–13:30 y 17:30–21:00</span></li>
+                <li className="flex items-start gap-2"><Calendar className="text-yellow-400 flex-shrink-0 mt-0.5" size={16} /><span>Sábado: 8:30–14:00</span></li>
+                <li className="flex items-start gap-2"><Calendar className="text-yellow-400 flex-shrink-0 mt-0.5" size={16} /><span>Domingo: Cerrado</span></li>
               </ul>
-            </FadeInSection>
+            </motion.div>
 
-            {/* Columna 3: Redes Sociales */}
-            <FadeInSection delay={0.2}>
-              <h4 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Síguenos</h4>
-              <div className="mb-6">
-                <div className="flex space-x-4 mb-4">
-                  <a
-                    href="https://www.facebook.com/p/Alenort-Distribuidora-Avicola-100070169381073/"
-                    className="text-white hover:text-blue-400 transition-colors duration-300 transform hover:scale-110"
-                    aria-label="Facebook"
-                  >
-                    <Facebook size={28} />
-                  </a>
-                  <a
-                    href="https://www.instagram.com/alenort.distribuidoraavicola/"
-                    className="text-white hover:text-pink-400 transition-colors duration-300 transform hover:scale-110"
-                    aria-label="Instagram"
-                  >
-                    <Instagram size={28} />
-                  </a>
-                  <a
-                    href="https://wa.me/5493812224766"
-                    className="text-white hover:text-green-400 transition-colors duration-300 transform hover:scale-110"
-                    aria-label="WhatsApp"
-                  >
-                    <MessageCircle size={28} />
-                  </a>
-                </div>
-                <p className="text-gray-300">Mantente al día con nuestras ofertas y novedades.</p>
+            <motion.div variants={fadeUp} custom={2} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+              <h4 className="text-xl font-semibold mb-4 text-yellow-400 border-b border-stone-700 pb-2">Síguenos</h4>
+              <div className="flex space-x-4 mb-4">
+                <motion.a whileHover={{ scale: 1.2 }} href="https://www.facebook.com/p/Alenort-Distribuidora-Avicola-100070169381073/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-blue-400 transition-colors" aria-label="Facebook"><Facebook size={28} /></motion.a>
+                <motion.a whileHover={{ scale: 1.2 }} href="https://www.instagram.com/alenort.distribuidoraavicola/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-pink-400 transition-colors" aria-label="Instagram"><Instagram size={28} /></motion.a>
+                <motion.a whileHover={{ scale: 1.2 }} href="https://wa.me/5493812224766" target="_blank" rel="noopener noreferrer" className="text-white hover:text-green-400 transition-colors" aria-label="WhatsApp"><MessageCircle size={28} /></motion.a>
               </div>
-
-              {/* Botón de Contáctanos */}
-              <Link
-                href="/contacto"
-                className="inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              >
+              <p className="text-stone-400 text-sm mb-4">Seguinos para ver ofertas y novedades.</p>
+              <Link href="/contacto" className="inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2.5 px-5 rounded-lg transition-all shadow-lg hover:shadow-yellow-500/30 hover:-translate-y-0.5 text-sm">
                 Contáctanos
               </Link>
-            </FadeInSection>
+            </motion.div>
           </div>
 
-          {/* Ubicación */}
-          <FadeInSection delay={0.25}>
-            <div className="w-full h-px bg-gray-700 my-8" />
-            <div className="text-center mb-6">
-              <h4 className="text-lg font-semibold mb-2 text-white">Ubicación</h4>
-              <p className="flex items-center justify-center">
-                <MapPin className="mr-2 text-yellow-400" size={18} />
-                San Miguel de Tucumán, Tucumán, Argentina
-              </p>
-            </div>
-          </FadeInSection>
-
-          {/* Línea divisoria */}
-          <div className="w-full h-px bg-gray-700 my-6" />
-
-          {/* Texto de derechos de autor */}
-          <div className="text-center text-sm text-gray-400">
-            © {new Date().getFullYear()} Alenort Distribuidora Avícola. Todos los derechos reservados.
-          </div>
+          <div className="w-full h-px bg-stone-700 my-8" />
+          <motion.div
+            variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+            className="text-center"
+          >
+            <p className="flex items-center justify-center text-sm text-stone-400 mb-3">
+              <MapPin className="mr-1 text-yellow-400" size={15} />
+              Juan B. Justo 1111, San Miguel de Tucumán, Tucumán, Argentina
+            </p>
+            <p className="text-xs text-stone-600">© {new Date().getFullYear()} Alenort Distribuidora Avícola. Todos los derechos reservados.</p>
+          </motion.div>
         </div>
       </footer>
 
-      {/* Estilos CSS para animaciones */}
-      <style jsx global>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
+      {/* ── BOTÓN FLOTANTE WHATSAPP ───────────────────────── */}
+      <motion.a
+        href="https://wa.me/5493812224766"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Contactar por WhatsApp"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 1.5, type: 'spring', stiffness: 200 }}
+        whileHover={{ scale: 1.15 }}
+        whileTap={{ scale: 0.9 }}
+        className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl shadow-green-500/40"
+      >
+        <MessageCircle size={28} fill="white" />
+        {/* pulso */}
+        <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-40 pointer-events-none" />
+      </motion.a>
     </div>
   );
 }
